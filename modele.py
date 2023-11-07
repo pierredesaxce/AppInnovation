@@ -3,6 +3,23 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
+# Check available GPUs
+gpus = tf.config.experimental.list_physical_devices('GPU')
+
+if gpus:
+    try:
+        # Set the GPU device as the default device
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+        tf.config.set_visible_devices(gpus[0], 'GPU')
+        print("Using GPU:", gpus[0])
+    except RuntimeError as e:
+        print(e)
+else:
+    print("No GPUs available. Using CPU.")
+
+# Now you can build and train your model as usual
+# ...
+
 # Chargement du fichier de mots de passe (un mot de passe par ligne)
 with open("data/Ashley-Madison.txt", "r") as file:
     passwords = [line.strip() for line in file]
