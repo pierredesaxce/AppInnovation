@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 # Check available GPUs
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -47,20 +48,8 @@ model.add(layers.TimeDistributed(layers.Dense(len(chars), activation="softmax"))
 
 model.compile(loss="categorical_crossentropy", optimizer="adam")
 
+# Define a ModelCheckpoint callback
+checkpoint = ModelCheckpoint("best_model.h5", monitor='val_categorical_accuracy', save_best_only=True, mode='max', verbose=1)
+
 # Entraînement du modèle
-model.fit(X, y, batch_size=128, epochs=50)
-
-# Génération de mots de passe
-seed_text = "your_seed_text_here"
-generated_password = seed_text
-for _ in range(50):  # Génère 50 caractères
-    x_pred = np.zeros((1, max_len, len(chars)))
-    for t, char in enumerate(generated_password):
-        x_pred[0, t, char_indices[char]] = 1
-
-    preds = model.predict(x_pred, verbose=0)[0]
-    next_index = np.argmax(preds[-1])
-    next_char = indices_char[next_index]
-    generated_password += next_char
-
-print("Mot de passe généré :", generated_password)
+model.fit(X, y, batch_size=128, epochs=1, callbacks=[checkpoint])
