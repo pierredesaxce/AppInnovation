@@ -1,49 +1,42 @@
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
+from collections import Counter
+import matplotlib.pyplot as plt
 
-# Chargement du fichier de mots de passe (un mot de passe par ligne)
-with open("data/Ashley-Madison.txt", "r") as file:
-    passwords = [line.strip() for line in file]
+# Nom du fichier contenant le corpus de mots de passe
+filename = "Ashley-Madison.txt"
 
-# Création d'un dictionnaire de caractères uniques
-chars = sorted(list(set("".join(passwords))))
-char_indices = dict((c, i) for i, c in enumerate(chars))
-indices_char = dict((i, c) for i, c in enumerate(chars))
+# Lire le contenu du fichier dans une liste
+with open(filename, "r") as file:
+    corpus = [line.strip() for line in file]
 
-# Préparation des données d'entraînement
-max_len = max([len(password) for password in passwords])
-X = np.zeros((len(passwords), max_len, len(chars)), dtype=np.bool_)
-y = np.zeros((len(passwords), max_len, len(chars)), dtype=np.bool_)
+# Calcul de la longueur moyenne des mots
+average_length = sum(len(word) for word in corpus) / len(corpus)
 
-for i, password in enumerate(passwords):
-    for t, char in enumerate(password):
-        X[i, t, char_indices[char]] = 1
-        if t < max_len - 1:
-            y[i, t + 1, char_indices[char]] = 1
+# Analyse des mots de différentes longueurs
+word_lengths = [len(word) for word in corpus]
+word_length_counts = Counter(word_lengths)
 
-# Création du modèle RNN avec une couche GRU en utilisant Keras
-model = keras.Sequential()
-model.add(layers.GRU(128, input_shape=(max_len, len(chars)), return_sequences=True))
-model.add(layers.TimeDistributed(layers.Dense(len(chars), activation="softmax")))
+# Identification des caractères utilisés
+letters_count = sum(word.isalpha() for word in corpus)
+digits_count = sum(word.isdigit() for word in corpus)
+special_chars_count = sum(not word.isalnum() for word in corpus)
 
-model.compile(loss="categorical_crossentropy", optimizer="adam")
+# Détection de mots redondants
+unique_corpus = list(set(corpus))
 
-# Entraînement du modèle
-model.fit(X, y, batch_size=128, epochs=50)
+# Affichage des résultats
+print(f"Longueur moyenne des mots : {average_length}")
+print("Distribution des mots par longueur :")
+for length, count in word_length_counts.items():
+    print(f"{length} caractères : {count} mots")
 
-# Génération de mots de passe
-seed_text = "your_seed_text_here"
-generated_password = seed_text
-for _ in range(50):  # Génère 50 caractères
-    x_pred = np.zeros((1, max_len, len(chars)))
-    for t, char in enumerate(generated_password):
-        x_pred[0, t, char_indices[char]] = 1
+print(f"Mots contenant uniquement des lettres : {letters_count}")
+print(f"Mots contenant des chiffres : {digits_count}")
+print(f"Mots contenant des caractères spéciaux : {special_chars_count}")
 
-    preds = model.predict(x_pred, verbose=0)[0]
-    next_index = np.argmax(preds[-1])
-    next_char = indices_char[next_index]
-    generated_password += next_char
+print(f"Nombre de mots uniques : {len(unique_corpus)}")
 
-print("Mot de passe généré :", generated_password)
+# Création d'un graphique pour la distribution des longueurs de mots
+plt.bar(word_length_counts.keys(), word_length_counts.values())
+plt.xlabel("Longueur des mots")
+plt.ylabel("Nombre de mots")
+plt.show()
