@@ -23,8 +23,8 @@ special_chars_count = sum(not word.isalnum() for word in corpus)
 # Proportion des mots de passe composés de lettres et de chiffres
 letters_and_digits_count = sum(word.isalnum() for word in corpus)
 
-# Analyse des combinaisons de caractères
-character_pairs = [word[i:i+3] for word in corpus for i in range(len(word)-2)]
+# Analyse des combinaisons de caractères (trois premiers caractères)
+character_pairs = [word[:3] for word in corpus if len(word) >= 3]
 character_pair_counts = Counter(character_pairs)
 
 # Détection de mots redondants
@@ -38,7 +38,7 @@ for length, count in word_length_counts.items():
 
 print(f"Mots contenant uniquement des lettres : {letters_count} ({round((letters_count/len(corpus))*100,2)} %)")
 print(f"Mots contenant uniquement des chiffres : {digits_count} ({round((digits_count/len(corpus))*100,2)} %)")
-print(f"Mots contenant des caractères spéciaux : {special_chars_count} ({round((special_chars_count/len(corpus))*100,2)} %)")
+print(f"Mots contenant au moins 1 caractère spécial : {special_chars_count} ({round((special_chars_count/len(corpus))*100,2)} %)")
 print(f"Mots composés de lettres et de chiffres : {letters_and_digits_count} ({round((letters_and_digits_count / len(corpus)) * 100, 2)} %)")
 
 print(f"Nombre de mots uniques : {len(unique_corpus)} ({round((len(unique_corpus)/len(corpus))*100,2)} %)")
