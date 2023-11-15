@@ -8,7 +8,7 @@
 #SBATCH --gpus-per-node=1
 #SBATCH --partition=gpu
 #SBATCH --time=00:03:00
-#SBATCH --outpout=./logs/
+#SBATCH --output=./logs/
 #SBATCH --error=./logs/
 
 srun ./Pytorch_PasswordGeneratorModelAI_V3.py
