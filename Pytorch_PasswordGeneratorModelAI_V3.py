@@ -24,32 +24,32 @@ indices_char = {i: c for i, c in enumerate(chars)}
 # Préparation des données d'entraînement
 max_len = max([len(password) for password in passwords])
 X = np.zeros((len(passwords), max_len, len(chars)), dtype=np.float32)
-y = np.zeros((len(passwords), max_len, len(chars)), dtype=np.float32)
+y = np.zeros((len(passwords), max_len), dtype=np.long)
 
 for i, password in enumerate(passwords):
     for t, char in enumerate(password):
         X[i, t, char_indices[char]] = 1.0
         if t < max_len - 1:
-            y[i, t + 1, char_indices[char]] = 1.0
+            y[i, t + 1] = char_indices[char]
 
 # Préparation des données de test
 max_len_test = max([len(password) for password in test_passwords])
 X_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.float32)
-y_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.float32)
+y_test = np.zeros((len(test_passwords), max_len_test), dtype=np.long)
 
 for i, password in enumerate(test_passwords):
     for t, char in enumerate(password):
         X_test[i, t, char_indices[char]] = 1.0
         if t < max_len_test - 1:
-            y_test[i, t + 1, char_indices[char]] = 1.0
+            y_test[i, t + 1] = char_indices[char]
 
 # Création du modèle RNN avec plusieurs couches GRU en utilisant PyTorch
 class GRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(GRUModel, self).__init__()
-        self.gru1 = nn.GRU(input_size, hidden_size, batch_first=True, return_sequences=True)
-        self.gru2 = nn.GRU(hidden_size, hidden_size, batch_first=True, return_sequences=True)
-        self.gru3 = nn.GRU(hidden_size, hidden_size, batch_first=True, return_sequences=True)
+        self.gru1 = nn.GRU(input_size, hidden_size, batch_first=True)
+        self.gru2 = nn.GRU(hidden_size, hidden_size, batch_first=True)
+        self.gru3 = nn.GRU(hidden_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
@@ -69,10 +69,10 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 # Convertir les tableaux NumPy en torch.Tensor
 X_tensor = torch.tensor(X, dtype=torch.float32).to(device)
-y_tensor = torch.argmax(torch.tensor(y, dtype=torch.float32), dim=-1).to(device)
+y_tensor = torch.tensor(y, dtype=torch.long).to(device)
 
 X_test_tensor = torch.tensor(X_test, dtype=torch.float32).to(device)
-y_test_tensor = torch.argmax(torch.tensor(y_test, dtype=torch.float32), dim=-1).to(device)
+y_test_tensor = torch.tensor(y_test, dtype=torch.long).to(device)
 
 # Créer des ensembles de données PyTorch
 train_dataset = TensorDataset(X_tensor, y_tensor)
