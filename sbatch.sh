@@ -11,4 +11,4 @@
 #SBATCH --output=./logs/
 #SBATCH --error=./logs/
 
-srun ./Pytorch_PasswordGeneratorModelAI_V3.py
+python3 ./Pytorch_PasswordGeneratorModelAI_V3.py
