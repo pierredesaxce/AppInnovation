@@ -4,9 +4,9 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --hint=nomultithread
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=16G
-#SBATCH --gpus-per-node=1
+#SBATCH --mem=32G
+#SBATCH --gpus-per-node=4
 #SBATCH --partition=gpu
-#SBATCH --time=00:03:00
+#SBATCH --time=00:59:00
 
 python3 ./Pytorch_PasswordGeneratorModelAI_V3.py
