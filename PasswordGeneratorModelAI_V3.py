@@ -66,6 +66,7 @@ model = keras.Sequential()
 model.add(layers.GRU(128, input_shape=(max_len, len(chars)), return_sequences=True))
 model.add(layers.GRU(64, return_sequences=True))
 model.add(layers.GRU(32, return_sequences=True))
+model.add(layers.GRU(64, return_sequences=True))
 model.add(layers.TimeDistributed(layers.Dense(len(chars), activation="softmax")))
 
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])

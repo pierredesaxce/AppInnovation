@@ -1,0 +1,22 @@
+Using device: cuda
+Epoch 1/10 - Average Loss: 0.5148342175143106
+Average Test Loss: 0.4035 - Test Accuracy: 0.9144
+Epoch 2/10 - Average Loss: 0.27606565885397855
+Average Test Loss: 0.3807 - Test Accuracy: 0.9144
+Epoch 3/10 - Average Loss: 0.26650584242781816
+Average Test Loss: 0.3747 - Test Accuracy: 0.9146
+Epoch 4/10 - Average Loss: 0.24686940809090932
+Average Test Loss: 0.3387 - Test Accuracy: 0.9195
+Epoch 5/10 - Average Loss: 0.2030370795807871
+Average Test Loss: 0.2251 - Test Accuracy: 0.9413
+Epoch 6/10 - Average Loss: 0.05694670633469917
+Average Test Loss: 0.0598 - Test Accuracy: 0.9875
+Epoch 7/10 - Average Loss: 0.007528815918354964
+Average Test Loss: 0.0342 - Test Accuracy: 0.9933
+Epoch 8/10 - Average Loss: 0.0031113605642197084
+Average Test Loss: 0.0226 - Test Accuracy: 0.9962
+Epoch 9/10 - Average Loss: 0.0015452246103264695
+Average Test Loss: 0.0164 - Test Accuracy: 0.9976
+Epoch 10/10 - Average Loss: 0.0008583161539990505
+Average Test Loss: 0.0129 - Test Accuracy: 0.9981
+Training complete.
