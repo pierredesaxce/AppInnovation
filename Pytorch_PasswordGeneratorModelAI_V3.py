@@ -84,6 +84,7 @@ test_loader = DataLoader(test_dataset, batch_size=512, shuffle=False)
 
 # Entraînement du modèle
 num_epochs = 10
+best_test_loss = float('inf')
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
@@ -99,15 +100,30 @@ for epoch in range(num_epochs):
     average_loss = total_loss / len(train_loader)
     print(f"Epoch {epoch + 1}/{num_epochs} - Average Loss: {average_loss}")
 
-# Évaluation du modèle sur l'ensemble de test
-model.eval()
-with torch.no_grad():
-    test_loss = 0
-    for inputs, targets in test_loader:
-        outputs = model(inputs)
-        loss = criterion(outputs.view(-1, output_size), targets.view(-1))
-        test_loss += loss.item()
+    # Évaluation du modèle sur l'ensemble de test
+    model.eval()
+    with torch.no_grad():
+        test_loss = 0
+        correct_test_predictions = 0
+        total_test_predictions = 0
+        for inputs, targets in test_loader:
+            outputs = model(inputs)
+            loss = criterion(outputs.view(-1, output_size), targets.view(-1))
+            test_loss += loss.item()
 
-    # Afficher l'erreur moyenne sur l'ensemble de test
-    average_test_loss = test_loss / len(test_loader)
-    print(f"Average Test Loss: {average_test_loss}")
+            # Calcul de l'accuracy sur l'ensemble de test
+            _, predicted = torch.max(outputs, 2)
+            correct_test_predictions += (predicted == targets).sum().item()
+            total_test_predictions += targets.numel()
+
+        # Afficher l'erreur moyenne et l'accuracy sur l'ensemble de test
+        average_test_loss = test_loss / len(test_loader)
+        test_accuracy = correct_test_predictions / total_test_predictions
+        print(f"Average Test Loss: {average_test_loss:.4f} - Test Accuracy: {test_accuracy:.4f}")
+
+        # Sauvegarder le meilleur modèle
+        if average_test_loss < best_test_loss:
+            best_test_loss = average_test_loss
+            torch.save(model.state_dict(), "best_model.pt")
+
+print("Training complete.")
