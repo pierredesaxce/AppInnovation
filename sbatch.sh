@@ -9,4 +9,5 @@
 #SBATCH --partition=gpu
 #SBATCH --time=00:59:00
 
-python3 ./Pytorch_PasswordGeneratorTest.py
+python3 ./Pytorch_PasswordGeneratorModelAI_V3.py
+
