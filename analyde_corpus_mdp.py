@@ -35,7 +35,7 @@ dict_pourcentage={}
 # Affichage des résultats
 print(f"Longueur moyenne des mots : {average_length}")
 print("Distribution des mots par longueur :")
-for length, count in word_length_counts.items():
+for length, count in sorted(word_length_counts.items()):
     pourcentage = round((count/len(corpus))*100,1)
     if pourcentage >= 1:
         dict_pourcentage[length] = pourcentage
@@ -52,7 +52,7 @@ print(f"Nombre de mots uniques : {len(unique_corpus)} ({round((len(unique_corpus
 print("Pour la génération des mdp :")
 
 sum = 0
-for elem in dict_pourcentage:
+for elem in sorted(dict_pourcentage):
     print(elem,"caractères ==>", dict_pourcentage[elem],"%")
     sum += dict_pourcentage[elem]
 print("Somme = "+str(round(sum,1))+"% ==> ajout de",round(100-round(sum,1),1),"% de mots de passes de 8 caractères (le plus élevé)")
