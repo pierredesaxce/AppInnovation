@@ -87,7 +87,7 @@ pairs, counts = zip(*top_pairs)
 plt.bar(pairs, counts)
 plt.xlabel("Combinaisons de caractères")
 plt.ylabel("Fréquence")
-plt.title("Top 10 des combinaisons de caractères les plus fréquentes")
+plt.title("Top 10 des combinaisons des premiers caractères les plus fréquentes")
 
 plt.tight_layout()
 
