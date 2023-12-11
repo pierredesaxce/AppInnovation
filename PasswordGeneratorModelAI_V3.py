@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -5,26 +6,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.model_selection import train_test_split
 
-# Check available GPUs
-gpus = tf.config.experimental.list_physical_devices('GPU')
-
-if gpus:
-    try:
-        # Limit GPU memory usage
-        tf.config.experimental.set_memory_growth(gpus[0], True)
-        tf.config.set_visible_devices(gpus[0], 'GPU')
-
-        # Limit GPU memory fraction
-        tf.config.experimental.set_virtual_device_configuration(
-            gpus[0],
-            [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048)]  # Adjust the limit as needed
-        )
-
-        print("Using GPU:", gpus[0])
-    except RuntimeError as e:
-        print(e)
-else:
-    print("No GPUs available. Using CPU.")
+os.environ["CUDA_VISIBLE_DEVICES"] = '-1'
 
 # Chargement du fichier de mots de passe (un mot de passe par ligne)
 with open("data/Ashley-Madison.txt", "r") as file:
