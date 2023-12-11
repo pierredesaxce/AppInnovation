@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import torch
 import torch.nn as nn
 import numpy as np
@@ -12,7 +13,7 @@ print("Using device:", device)
 with open("data/Ashley-Madison.txt", "r") as file:
     passwords = [line.strip() for line in file]
 
-# Chargement du fichier eval.txt pour les données de test
+# Chargement du fichier eval txt pour les données de test
 with open("data/eval.txt", "r") as file:
     test_passwords = [line.strip()[:-1] for line in file]  # Supprimer le dernier caractère "\" à la fin
 
@@ -63,4 +64,4 @@ def generate_password(model, seed="", max_len=20):
 # Générer quelques mots de passe avec une seed spécifique
 for seed in ["abc", "123", "xyz"]:
     generated_password = generate_password(best_model, seed=seed, max_len=15)
-    print(f"Seed: {seed}, Generated Password: {generated_password}")
+    print("Seed: {}, Generated Password: {}".format(seed, generated_password))
