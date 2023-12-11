@@ -30,11 +30,16 @@ character_pair_counts = Counter(character_pairs)
 # Détection de mots redondants
 unique_corpus = list(set(corpus))
 
+dict_pourcentage={}
+
 # Affichage des résultats
 print(f"Longueur moyenne des mots : {average_length}")
 print("Distribution des mots par longueur :")
 for length, count in word_length_counts.items():
-    print(f"{length} caractères : {count} mots")
+    pourcentage = round((count/len(corpus))*100,1)
+    if pourcentage >= 1:
+        dict_pourcentage[length] = pourcentage
+    print(f"{length} caractères : {count} mots ("+str(pourcentage)+" %)")
 
 print(f"Mots contenant uniquement des lettres : {letters_count} ({round((letters_count/len(corpus))*100,2)} %)")
 print(f"Mots contenant uniquement des chiffres : {digits_count} ({round((digits_count/len(corpus))*100,2)} %)")
@@ -42,6 +47,16 @@ print(f"Mots contenant au moins 1 caractère spécial : {special_chars_count} ({
 print(f"Mots composés de lettres et de chiffres : {letters_and_digits_count} ({round((letters_and_digits_count / len(corpus)) * 100, 2)} %)")
 
 print(f"Nombre de mots uniques : {len(unique_corpus)} ({round((len(unique_corpus)/len(corpus))*100,2)} %)")
+
+
+print("Pour la génération des mdp :")
+
+sum = 0
+for elem in dict_pourcentage:
+    print(elem,"caractères ==>", dict_pourcentage[elem],"%")
+    sum += dict_pourcentage[elem]
+print("Somme = "+str(round(sum,1))+"% ==> ajout de",round(100-round(sum,1),1),"% de mots de passes de 8 caractères (le plus élevé)")
+
 
 # Création d'un graphique pour la distribution des longueurs de mots
 plt.figure(figsize=(10, 5))
@@ -61,4 +76,23 @@ plt.ylabel("Fréquence")
 plt.title("Top 10 des combinaisons de caractères les plus fréquentes")
 
 plt.tight_layout()
+plt.show()
+
+# Analyse des mots de différentes longueurs
+word_lengths = [len(word) for word in corpus]
+word_length_counts = Counter(word_lengths)
+
+# Ajout de zéros pour les longueurs de mots manquantes
+for length in range(21):
+    if length not in word_length_counts:
+        word_length_counts[length] = 0
+
+# Création de la courbe de distribution non cumulative
+plt.figure(figsize=(10, 5))
+plt.plot(list(word_length_counts.keys()), list(word_length_counts.values()), marker='o', linestyle='-')
+plt.xlabel("Longueur des mots")
+plt.ylabel("Nombre de mots")
+plt.title("Courbe de distribution des tailles de mots")
+plt.xticks(range(0, 21))  # Ajuster les marques de l'axe des abscisses de 0 à 20
+plt.grid(True)
 plt.show()
