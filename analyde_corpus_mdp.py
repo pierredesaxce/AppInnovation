@@ -58,15 +58,29 @@ for elem in dict_pourcentage:
 print("Somme = "+str(round(sum,1))+"% ==> ajout de",round(100-round(sum,1),1),"% de mots de passes de 8 caractères (le plus élevé)")
 
 
-# Création d'un graphique pour la distribution des longueurs de mots
-plt.figure(figsize=(10, 5))
+# Filtrer les mots qui ont entre 1 et 20 lettres
+filtered_corpus = [word for word in corpus if 1 <= len(word) <= 20]
+
+# Analyse des mots de différentes longueurs
+word_lengths = [len(word) for word in filtered_corpus]
+word_length_counts = Counter(word_lengths)
+
+# Tri des tailles de mots dans l'ordre croissant
+sorted_lengths = sorted(word_length_counts.keys())
+
+# Création de la courbe de distribution non cumulative
+plt.figure(figsize=(12, 5))  # Ajustement de la taille de la figure
+
+# Premier sous-graphique (courbe de distribution des tailles de mots)
 plt.subplot(1, 2, 1)
-plt.bar(word_length_counts.keys(), word_length_counts.values())
+plt.plot(sorted_lengths, [word_length_counts[length] for length in sorted_lengths], marker='o', linestyle='-')
 plt.xlabel("Longueur des mots")
 plt.ylabel("Nombre de mots")
-plt.title("Distribution des longueurs de mots")
+plt.title("Courbe de distribution des tailles de mots (1 à 20 lettres)")
+plt.grid(True)
+plt.xticks(range(1, 21))  # Ajustement des marques de l'axe des abscisses de 1 à 20
 
-# Création d'un graphique pour les combinaisons de caractères les plus fréquentes
+# Deuxième sous-graphique (histogramme des combinaisons de caractères)
 plt.subplot(1, 2, 2)
 top_pairs = character_pair_counts.most_common(10)
 pairs, counts = zip(*top_pairs)
@@ -76,23 +90,5 @@ plt.ylabel("Fréquence")
 plt.title("Top 10 des combinaisons de caractères les plus fréquentes")
 
 plt.tight_layout()
-plt.show()
 
-# Analyse des mots de différentes longueurs
-word_lengths = [len(word) for word in corpus]
-word_length_counts = Counter(word_lengths)
-
-# Ajout de zéros pour les longueurs de mots manquantes
-for length in range(21):
-    if length not in word_length_counts:
-        word_length_counts[length] = 0
-
-# Création de la courbe de distribution non cumulative
-plt.figure(figsize=(10, 5))
-plt.plot(list(word_length_counts.keys()), list(word_length_counts.values()), marker='o', linestyle='-')
-plt.xlabel("Longueur des mots")
-plt.ylabel("Nombre de mots")
-plt.title("Courbe de distribution des tailles de mots")
-plt.xticks(range(0, 21))  # Ajuster les marques de l'axe des abscisses de 0 à 20
-plt.grid(True)
 plt.show()
