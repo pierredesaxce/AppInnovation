@@ -47,10 +47,10 @@ for i, password in enumerate(test_passwords):
 class GRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(GRUModel, self).__init__()
-        self.gru1 = nn.GRU(input_size, hidden_size, batch_first=True)
-        self.gru2 = nn.GRU(hidden_size, hidden_size, batch_first=True)
-        self.gru3 = nn.GRU(hidden_size, hidden_size, batch_first=True)
-        self.fc = nn.Linear(hidden_size, output_size)
+        self.gru1 = nn.GRU(input_size, 128, batch_first=True)
+        self.gru2 = nn.GRU(128, 256, batch_first=True)
+        self.gru3 = nn.GRU(256, 512, batch_first=True)
+        self.fc = nn.Linear(512, output_size)
 
     def forward(self, x):
         out, _ = self.gru1(x)
@@ -60,7 +60,7 @@ class GRUModel(nn.Module):
         return out
 
 input_size = len(chars)
-hidden_size = 32
+hidden_size = 256
 output_size = len(chars)
 
 model = GRUModel(input_size, hidden_size, output_size).to(device)
@@ -124,6 +124,6 @@ for epoch in range(num_epochs):
         # Sauvegarder le meilleur modèle
         if average_test_loss < best_test_loss:
             best_test_loss = average_test_loss
-            torch.save(model.state_dict(), "best_model.pt")
+            torch.save(model.state_dict(), "best_model_V2.pt")
 
 print("Training complete.")
