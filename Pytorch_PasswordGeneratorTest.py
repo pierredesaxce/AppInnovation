@@ -3,8 +3,6 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
 # Check for GPU availability
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Using device:", device)
@@ -16,6 +14,10 @@ with open("data/Ashley-Madison.txt", "r") as file:
 # Chargement du fichier eval txt pour les données de test
 with open("data/eval.txt", "r") as file:
     test_passwords = [line.strip()[:-1] for line in file]  # Supprimer le dernier caractère "\" à la fin
+
+chars = sorted(list(set("".join(passwords + test_passwords))))
+char_indices = {c: i for i, c in enumerate(chars)}
+indices_char = {i: c for i, c in enumerate(chars)}
 
 # Définir les tailles d'entrée, de sortie et cachée
 input_size = len(chars)
@@ -53,7 +55,7 @@ def generate_password(model, seed="", max_len=20):
     for _ in range(max_len - len(seed)):
         outputs = model(input_sequence)
         _, predicted_index = torch.max(outputs, 2)
-        next_char = indices_char[predicted_index.item()]
+        next_char = indices_char[predicted_index[0, 0].item()]
         generated_password += next_char
 
         input_sequence = torch.roll(input_sequence, -1, dims=1)
