@@ -112,7 +112,7 @@ for epoch in range(num_epochs):
             test_loss += loss.item()
 
             # Calcul de l'accuracy sur l'ensemble de test
-            _, predicted = torch.max(outputs, 2)
+            _, predicted_index = torch.max(outputs[:, -1, :], 1)
             correct_test_predictions += (predicted == targets).sum().item()
             total_test_predictions += targets.numel()
 
