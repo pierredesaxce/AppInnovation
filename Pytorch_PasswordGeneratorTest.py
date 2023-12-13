@@ -36,10 +36,10 @@ output_size = len(chars)
 class GRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(GRUModel, self).__init__()
-        self.gru1 = nn.GRU(input_size, hidden_size, batch_first=True)
-        self.gru2 = nn.GRU(hidden_size, hidden_size, batch_first=True)
-        self.gru3 = nn.GRU(hidden_size, hidden_size, batch_first=True)
-        self.fc = nn.Linear(hidden_size, output_size)
+        self.gru1 = nn.GRU(input_size, 128, batch_first=True)
+        self.gru2 = nn.GRU(128, 256, batch_first=True)
+        self.gru3 = nn.GRU(256, 128, batch_first=True)
+        self.fc = nn.Linear(128, output_size)
 
     def forward(self, x):
         out, _ = self.gru1(x)
@@ -50,7 +50,7 @@ class GRUModel(nn.Module):
 
 # Charger le meilleur modèle
 best_model = GRUModel(input_size, hidden_size, output_size).to(device)
-best_model.load_state_dict(torch.load("best_model.pt", map_location=device))
+best_model.load_state_dict(torch.load("best_model_V2.pt", map_location=device))
 best_model.eval()
 
 def generate_password(model, seed="", max_len=20, temperature=1.0):
