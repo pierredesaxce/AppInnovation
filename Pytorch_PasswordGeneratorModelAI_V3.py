@@ -113,8 +113,8 @@ for epoch in range(num_epochs):
 
             # Calcul de l'accuracy sur l'ensemble de test
 
-            _, predicted_index = torch.max(outputs[:, -1, :], 1)
-            correct_test_predictions += (predicted_index == targets).sum().item()
+            _, predicted = torch.max(outputs, 2)
+            correct_test_predictions += (predicted[:, 1:] == targets[:, 1:]).sum().item()
             total_test_predictions += targets.numel()
 
         # Afficher l'erreur moyenne et l'accuracy sur l'ensemble de test
