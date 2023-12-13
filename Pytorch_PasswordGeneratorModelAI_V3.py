@@ -79,11 +79,11 @@ train_dataset = TensorDataset(X_tensor, y_tensor)
 test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
 
 # Créer des chargeurs de données
-train_loader = DataLoader(train_dataset, batch_size=512, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=512, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
 # Entraînement du modèle
-num_epochs = 10
+num_epochs = 1
 best_test_loss = float('inf')
 for epoch in range(num_epochs):
     model.train()
@@ -112,8 +112,9 @@ for epoch in range(num_epochs):
             test_loss += loss.item()
 
             # Calcul de l'accuracy sur l'ensemble de test
-            _, predicted = torch.max(outputs, 2)
-            correct_test_predictions += (predicted == targets).sum().item()
+
+            _, predicted_index = torch.max(outputs[:, -1, :], 1)
+            correct_test_predictions += (predicted_index == targets).sum().item()
             total_test_predictions += targets.numel()
 
         # Afficher l'erreur moyenne et l'accuracy sur l'ensemble de test
