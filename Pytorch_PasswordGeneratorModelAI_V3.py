@@ -79,8 +79,8 @@ train_dataset = TensorDataset(X_tensor, y_tensor)
 test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
 
 # Créer des chargeurs de données
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=256, shuffle=False)
 
 # Entraînement du modèle
 num_epochs = 1
