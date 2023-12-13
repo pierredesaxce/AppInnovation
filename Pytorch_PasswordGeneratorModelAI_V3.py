@@ -57,6 +57,10 @@ class GRUModel(nn.Module):
         out, _ = self.gru2(out)
         out, _ = self.gru3(out)
         out = self.fc(out)
+
+        # Utiliser une approche séquentielle pour la prédiction
+        out = self.fc(out)
+        
         return out
 
 input_size = len(chars)
