@@ -48,8 +48,8 @@ class GRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(GRUModel, self).__init__()
         self.gru1 = nn.GRU(input_size, 128, batch_first=True)
-        self.gru2 = nn.GRU(128, 128, batch_first=True)
-        self.gru3 = nn.GRU(128, 128, batch_first=True)
+        self.gru2 = nn.GRU(128, 256, batch_first=True)
+        self.gru3 = nn.GRU(256, 128, batch_first=True)
         self.fc = nn.Linear(128, output_size)
 
     def forward(self, x):
@@ -100,7 +100,7 @@ train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
 
 # Entraînement du modèle
-num_epochs = 1
+num_epochs = 20
 best_test_loss = float('inf')
 for epoch in range(num_epochs):
     average_loss = train_epoch(model, train_loader, criterion, optimizer)
