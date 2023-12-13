@@ -58,10 +58,23 @@ class GRUModel(nn.Module):
         out, _ = self.gru3(out)
         out = self.fc(out)
 
-        # Utiliser une approche séquentielle pour la prédiction
-        out = self.fc(out)
-        
         return out
+
+# Ajustement de la boucle d'entraînement pour permettre la prédiction séquentielle
+def train_epoch(model, train_loader, criterion, optimizer):
+    model.train()
+    total_loss = 0
+    for inputs, targets in train_loader:
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        
+        # Ajustement des dimensions pour la loss
+        loss = criterion(outputs.view(-1, output_size), targets.view(-1))
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+
+    return total_loss / len(train_loader)
 
 input_size = len(chars)
 hidden_size = 256
@@ -90,18 +103,7 @@ test_loader = DataLoader(test_dataset, batch_size=512, shuffle=False)
 num_epochs = 10
 best_test_loss = float('inf')
 for epoch in range(num_epochs):
-    model.train()
-    total_loss = 0
-    for inputs, targets in train_loader:
-        optimizer.zero_grad()
-        outputs = model(inputs)
-        loss = criterion(outputs.view(-1, output_size), targets.view(-1))
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item()
-
-    # Afficher l'erreur moyenne à chaque epoch
-    average_loss = total_loss / len(train_loader)
+    average_loss = train_epoch(model, train_loader, criterion, optimizer)
     print(f"Epoch {epoch + 1}/{num_epochs} - Average Loss: {average_loss}")
 
     # Évaluation du modèle sur l'ensemble de test
