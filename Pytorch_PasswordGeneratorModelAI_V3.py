@@ -48,9 +48,9 @@ class GRUModel(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(GRUModel, self).__init__()
         self.gru1 = nn.GRU(input_size, 128, batch_first=True)
-        self.gru2 = nn.GRU(128, 256, batch_first=True)
-        self.gru3 = nn.GRU(256, 512, batch_first=True)
-        self.fc = nn.Linear(512, output_size)
+        self.gru2 = nn.GRU(128, 128, batch_first=True)
+        self.gru3 = nn.GRU(128, 128, batch_first=True)
+        self.fc = nn.Linear(128, output_size)
 
     def forward(self, x):
         out, _ = self.gru1(x)
@@ -79,8 +79,8 @@ train_dataset = TensorDataset(X_tensor, y_tensor)
 test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
 
 # Créer des chargeurs de données
-train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=256, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
 
 # Entraînement du modèle
 num_epochs = 1
