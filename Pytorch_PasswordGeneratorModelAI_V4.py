@@ -93,3 +93,8 @@ with torch.no_grad():
     train_accuracy = (model(X).argmax(dim=2) == y.argmax(dim=2)).float().mean().item()
     test_accuracy = (model(X_test).argmax(dim=2) == y_test.argmax(dim=2)).float().mean().item()
     print(f"Accuracy on training set: {train_accuracy} - Accuracy on test set: {test_accuracy}")
+
+    # Sauvegarder le meilleur modèle
+    if average_test_loss < best_test_loss:
+        best_test_loss = average_test_loss
+        torch.save(model.state_dict(), "best_model_V4.pt")
