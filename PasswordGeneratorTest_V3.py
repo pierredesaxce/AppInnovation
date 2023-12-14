@@ -14,6 +14,7 @@ with open("data/Ashley-Madison.txt", "r") as file:
 
 # Chargement du fichier eval.txt pour les données de test
 with open("data/eval.txt", "r") as file:
+    # Filter passwords with 9 characters
     test_passwords = [line.strip()[:-1] for line in file if len(line.strip()) == 9]  # Supprimer le dernier caractère "\" à la fin
 
 # Création d'un dictionnaire de caractères uniques
@@ -26,7 +27,6 @@ model = load_model("best_model.h5")  # Load your saved model file here
 
 # Générer des mots de passe en utilisant le modèle entraîné
 def generate_passwords(model, seed="", num_passwords=1000000, temperature=3.0):
-    print(f"generate_passwords")
     generated_passwords = []
 
     for i in range(num_passwords):
@@ -45,8 +45,12 @@ def generate_passwords(model, seed="", num_passwords=1000000, temperature=3.0):
 
         generated_passwords.append(generated_password)
 
-        # Imprimer chaque mot de passe sur une ligne
-        print(generated_password)
+        # Calculer le pourcentage de lettres correspondant aux 4 derniers caractères du mot de passe original
+        matching_percentage = sum(c1 == c2 for c1, c2 in zip(seed_password[-4:], generated_password[-4:])) / 4 * 100
+
+
+        # Imprimer chaque mot de passe sur une ligne avec le pourcentage correspondant
+        print(f"Original Password: {seed_password} - Generated Password: {generated_password} - Match: {seed_password == generated_password} - Matching Percentage: {matching_percentage:.2f}%")
         
         # Imprimer l'avancement à chaque 1000 mots de passe générés
         if (i + 1) % 10 == 0:
@@ -63,12 +67,37 @@ def sample_index(predictions, temperature=3.0):
     probabilities = np.random.multinomial(1, predictions, 1)
     return np.argmax(probabilities)
 
-# Générer 10000 mots de passe avec une seed spécifique (vous pouvez changer la seed)
-generated_passwords = generate_passwords(model, seed="", num_passwords=100)
+# Générer 10000 mots de passe avec les 4 premiers caractères de chaque mot de passe dans eval.txt comme seed
+generated_passwords = []
+match_count = 0
+total_matching_percentage = 0
+
+for seed_password in test_passwords:
+    seed = seed_password[:4]
+    generated_password = generate_passwords(model, seed=seed, num_passwords=1)[0]
+    generated_passwords.append(generated_password)
+    
+    # Calculer le pourcentage de lettres correspondant au mot de passe original
+    matching_percentage = sum(c1 == c2 for c1, c2 in zip(seed_password[-4:], generated_password[-4:])) / 4 * 100
+    total_matching_percentage += matching_percentage
+    
+    # Vérifier si le mot de passe généré correspond au mot de passe attendu
+    if seed_password == generated_password:
+        match_count += 1
 
 # Écrire les mots de passe générés dans un fichier txt
 with open("generated_passwords.txt", "w") as file:
     for password in generated_passwords:
         file.write(password + "\n")
 
+# Calculer les statistiques finales
+total_generated = len(generated_passwords)
+accuracy = match_count / total_generated if total_generated > 0 else 0.0
+average_matching_percentage = total_matching_percentage / total_generated if total_generated > 0 else 0.0
+
+# Afficher les statistiques finales
+print(f"Total passwords generated: {total_generated}")
+print(f"Matching passwords: {match_count}")
+print(f"Accuracy: {accuracy * 100:.2f}%")
+print(f"Average Matching Percentage: {average_matching_percentage:.2f}%")
 print("Generated passwords saved to generated_passwords.txt")
