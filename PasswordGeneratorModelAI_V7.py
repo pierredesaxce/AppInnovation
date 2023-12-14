@@ -14,12 +14,14 @@ max_len = 7  # Remplacez cette valeur par la longueur maximale que vous avez uti
 
 # Chargement du fichier de mots de passe (un mot de passe par ligne)
 with open("data/Ashley-Madison.txt", "r") as file:
-    # Filter passwords with 8 characters
+    # Filter passwords with max_len characters
     passwords = [line.strip() for line in file if len(line.strip()) == max_len]
 
-# Chargement du fichier eval.txt pour les données de test
-with open("data/eval.txt", "r") as file:
-    test_passwords = [line.strip()[:-1] for line in file if len(line.strip()) == max_len+1]  # Supprimer le dernier caractère "\" à la fin
+# Afficher la taille de la liste passwords
+print("Taille de passwords:", len(passwords))
+
+# Diviser les données en ensembles d'entraînement et de validation
+train_passwords, val_passwords = train_test_split(passwords, test_size=0.2, random_state=42)
 
 
 class CustomAccuracy(Metric):
@@ -45,31 +47,31 @@ class CustomAccuracy(Metric):
         return self.correct_predictions / self.total_samples
 
 # Création d'un dictionnaire de caractères uniques
-chars = sorted(list(set("".join(passwords + test_passwords))))
+chars = sorted(list(set("".join(passwords))))
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
 # Préparation des données d'entraînement
-max_len = max([len(password) for password in passwords])
-X = np.zeros((len(passwords), max_len, len(chars)), dtype=np.float32)
-y = np.zeros((len(passwords), max_len, len(chars)), dtype=np.float32)
+max_len_train = max([len(password) for password in train_passwords])
+X_train = np.zeros((len(train_passwords), max_len_train, len(chars)), dtype=np.float32)
+y_train = np.zeros((len(train_passwords), max_len_train, len(chars)), dtype=np.float32)
 
-for i, password in enumerate(passwords):
+for i, password in enumerate(train_passwords):
     for t, char in enumerate(password):
-        X[i, t, char_indices[char]] = 1
-        if t < max_len - 1:
-            y[i, t + 1, char_indices[char]] = 1
+        X_train[i, t, char_indices[char]] = 1
+        if t < max_len_train - 1:
+            y_train[i, t + 1, char_indices[char]] = 1
 
-# Préparation des données de test
-max_len_test = max([len(password) for password in test_passwords])
-X_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.float32)
-y_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.float32)
+# Préparation des données de validation
+max_len_val = max([len(password) for password in val_passwords])
+X_val = np.zeros((len(val_passwords), max_len_val, len(chars)), dtype=np.float32)
+y_val = np.zeros((len(val_passwords), max_len_val, len(chars)), dtype=np.float32)
 
-for i, password in enumerate(test_passwords):
+for i, password in enumerate(val_passwords):
     for t, char in enumerate(password):
-        X_test[i, t, char_indices[char]] = 1
-        if t < max_len_test - 1:
-            y_test[i, t + 1, char_indices[char]] = 1
+        X_val[i, t, char_indices[char]] = 1
+        if t < max_len_val - 1:
+            y_val[i, t + 1, char_indices[char]] = 1
 
 # Création du modèle RNN avec plusieurs couches GRU
 model = keras.Sequential()
@@ -86,10 +88,10 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=[custom
 checkpoint = ModelCheckpoint("best_model.h5", monitor='val_custom_accuracy', save_best_only=True, mode='max', verbose=1)
 
 # Entraînement du modèle sur l'ensemble d'entraînement
-history = model.fit(X, y, validation_data=(X_test, y_test), batch_size=4096, epochs=100, callbacks=[checkpoint])
+history = model.fit(X_train, y_train, validation_data=(X_val, y_val), batch_size=512, epochs=1000, callbacks=[checkpoint])
 
 # Afficher l'accuracy sur les ensembles d'entraînement et de test à chaque epoch
 for epoch in range(len(history.history['custom_accuracy'])):
     train_accuracy = history.history['custom_accuracy'][epoch]
-    test_accuracy = history.history['val_custom_accuracy'][epoch]
-    print(f"Epoch {epoch + 1}/{len(history.history['custom_accuracy'])} - Accuracy on training set: {train_accuracy} - Accuracy on test set: {test_accuracy}")
+    val_accuracy = history.history['val_custom_accuracy'][epoch]
+    print(f"Epoch {epoch + 1}/{len(history.history['custom_accuracy'])} - Accuracy on training set: {train_accuracy} - Accuracy on validation set: {val_accuracy}")
