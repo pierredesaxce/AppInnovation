@@ -5,11 +5,19 @@ from tensorflow.keras.preprocessing import image
 import os
 
 # Définir la longueur maximale des mots de passe
-max_len = 110  # Remplacez cette valeur par la longueur maximale que vous avez utilisée lors de l'entraînement
+max_len = 8  # Remplacez cette valeur par la longueur maximale que vous avez utilisée lors de l'entraînement
 
-# Définir la liste de caractères uniques (chiffres, lettres et caractères spéciaux)
-chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!"?$%&\'()*+,-./<=>?@[\\]^_`{|}~#;'
+# Chargement du fichier de mots de passe (un mot de passe par ligne)
+with open("data/Ashley-Madison.txt", "r") as file:
+    # Filter passwords with 8 characters
+    passwords = [line.strip() for line in file if len(line.strip()) == 8]
 
+# Chargement du fichier eval.txt pour les données de test
+with open("data/eval.txt", "r") as file:
+    test_passwords = [line.strip()[:-1] for line in file if len(line.strip()) == 9]  # Supprimer le dernier caractère "\" à la fin
+
+# Création d'un dictionnaire de caractères uniques
+chars = sorted(list(set("".join(passwords + test_passwords))))
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
@@ -55,7 +63,7 @@ def sample_index(predictions, temperature=3.0):
     return np.argmax(probabilities)
 
 # Générer 10000 mots de passe avec une seed spécifique (vous pouvez changer la seed)
-generated_passwords = generate_passwords(model, seed="man", num_passwords=10000)
+generated_passwords = generate_passwords(model, seed="", num_passwords=100)
 
 # Écrire les mots de passe générés dans un fichier txt
 with open("generated_passwords.txt", "w") as file:

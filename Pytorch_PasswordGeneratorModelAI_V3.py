@@ -96,11 +96,11 @@ train_dataset = TensorDataset(X_tensor, y_tensor)
 test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
 
 # Créer des chargeurs de données
-train_loader = DataLoader(train_dataset, batch_size=128, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=128, shuffle=False)
+train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=2, shuffle=False)
 
 # Entraînement du modèle
-num_epochs = 20
+num_epochs = 3
 best_test_loss = float('inf')
 for epoch in range(num_epochs):
     average_loss = train_epoch(model, train_loader, criterion, optimizer)
