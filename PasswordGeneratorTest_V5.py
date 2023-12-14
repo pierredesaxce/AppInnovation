@@ -8,20 +8,19 @@ from tensorflow.keras.metrics import Metric
 
 
 # Définir la longueur maximale des mots de passe
-max_len = 7  # Remplacez cette valeur par la longueur maximale que vous avez utilisée lors de l'entraînement
+max_len = 6  # Remplacez cette valeur par la longueur maximale que vous avez utilisée lors de l'entraînement
 
 # Chargement du fichier de mots de passe (un mot de passe par ligne)
-with open("data/Ashley-Madison.txt", "r") as file:
-    # Filter passwords with 8 characters
-    passwords = [line.strip() for line in file if len(line.strip()) == max_len]
+max_passwords = 200  # Nombre maximum de mots de passe à prendre
 
-# Chargement du fichier eval.txt pour les données de test
-with open("data/eval.txt", "r") as file:
-    # Filter passwords with 9 characters
-    test_passwords = [line.strip()[:-1] for line in file if len(line.strip()) == max_len + 1]  # Supprimer le dernier caractère "\" à la fin
+with open("data/Ashley-Madison.txt", "r") as file:
+    # Filter passwords with 8 characters and take at most 200 passwords
+    passwords = [line.strip() for line in file if len(line.strip()) == max_len][:max_passwords]
 
 # Création d'un dictionnaire de caractères uniques
-chars = sorted(list(set("".join(passwords + test_passwords))))
+#chars = sorted(list(set("".join(passwords))))
+chars =  [' ', '!', '#', '$', '%', '&', '(', ')', '*', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ';', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '\\', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '~']
+print("chars : ", chars)
 char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
@@ -98,7 +97,7 @@ generated_passwords = []
 match_count = 0
 total_matching_percentage = 0
 
-for seed_password in test_passwords:
+for seed_password in passwords:
     seed = seed_password[:int(max_len/2)]
     generated_password = generate_passwords(model, seed=seed, num_passwords=1)[0]
     generated_passwords.append(generated_password)
