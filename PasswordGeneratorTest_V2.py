@@ -37,7 +37,8 @@ def generate_passwords(model, seed="", num_passwords=1000000, temperature=3.0):
 
         generated_passwords.append(generated_password)
 
-        print(generated_passwords)
+        # Imprimer chaque mot de passe sur une ligne
+        print(generated_password)
         
         # Imprimer l'avancement à chaque 1000 mots de passe générés
         if (i + 1) % 10 == 0:
