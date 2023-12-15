@@ -11,7 +11,7 @@ from tensorflow.keras.metrics import Metric
 max_len = 6  # Remplacez cette valeur par la longueur maximale que vous avez utilisée lors de l'entraînement
 
 # Chargement du fichier de mots de passe (un mot de passe par ligne)
-max_passwords = 200  # Nombre maximum de mots de passe à prendre
+max_passwords = 1000  # Nombre maximum de mots de passe à prendre
 
 with open("data/Ashley-Madison.txt", "r") as file:
     # Filter passwords with 8 characters and take at most 200 passwords

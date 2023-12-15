@@ -1,17 +1,17 @@
 import os
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras.callbacks import ModelCheckpoint
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '-1'
+#os.environ["CUDA_VISIBLE_DEVICES"] = '-1'
 
 # Chargement du fichier de mots de passe (un mot de passe par ligne)
 with open("data/Ashley-Madison.txt", "r") as file:
-    # Filter passwords with 8 characters
-    passwords = [line.strip() for line in file if len(line.strip()) == 8]
+    # Filter passwords with max_len characters
+    passwords = [line.strip() for line in file if len(line.strip()) == max_len]
 
 
 # Chargement du fichier eval.txt pour les données de test
@@ -25,8 +25,8 @@ indices_char = dict((i, c) for i, c in enumerate(chars))
 
 # Préparation des données d'entraînement
 max_len = max([len(password) for password in passwords])
-X = np.zeros((len(passwords), max_len, len(chars)), dtype=np.bool_)
-y = np.zeros((len(passwords), max_len, len(chars)), dtype=np.bool_)
+X = np.zeros((len(passwords), max_len, len(chars)), dtype=np.float32)
+y = np.zeros((len(passwords), max_len, len(chars)), dtype=np.float32)
 
 for i, password in enumerate(passwords):
     for t, char in enumerate(password):
@@ -36,8 +36,8 @@ for i, password in enumerate(passwords):
 
 # Préparation des données de test
 max_len_test = max([len(password) for password in test_passwords])
-X_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.bool_)
-y_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.bool_)
+X_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.float32)
+y_test = np.zeros((len(test_passwords), max_len_test, len(chars)), dtype=np.float32)
 
 for i, password in enumerate(test_passwords):
     for t, char in enumerate(password):
@@ -45,25 +45,58 @@ for i, password in enumerate(test_passwords):
         if t < max_len_test - 1:
             y_test[i, t + 1, char_indices[char]] = 1
 
+# Conversion en torch.Tensor
+X = torch.from_numpy(X)
+y = torch.from_numpy(y)
+X_test = torch.from_numpy(X_test)
+y_test = torch.from_numpy(y_test)
+
 # Création du modèle RNN avec plusieurs couches GRU
-model = keras.Sequential()
-model.add(layers.GRU(128, input_shape=(max_len, len(chars)), return_sequences=True))
-model.add(layers.GRU(64, return_sequences=True))
-model.add(layers.GRU(32, return_sequences=True))
-model.add(layers.GRU(64, return_sequences=True))
-model.add(layers.TimeDistributed(layers.Dense(len(chars), activation="softmax")))
+class GRUModel(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(GRUModel, self).__init__()
+        self.gru1 = nn.GRU(input_size, hidden_size, batch_first=True)
+        self.gru2 = nn.GRU(hidden_size, hidden_size, batch_first=True)
+        self.gru3 = nn.GRU(hidden_size, hidden_size, batch_first=True)
+        self.gru4 = nn.GRU(hidden_size, hidden_size, batch_first=True)
+        self.fc = nn.Linear(hidden_size, output_size)
+        
+    def forward(self, x):
+        out, _ = self.gru1(x)
+        out, _ = self.gru2(out)
+        out, _ = self.gru3(out)
+        out, _ = self.gru4(out)
+        out = self.fc(out)
+        return out
 
-model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=['accuracy'])
+model = GRUModel(len(chars), 128, len(chars))
 
-# Define a ModelCheckpoint callback
-checkpoint = ModelCheckpoint("best_model.h5", monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters())
 
 # Entraînement du modèle sur l'ensemble d'entraînement
-history = model.fit(X, y, validation_data=(X_test, y_test), batch_size=512, epochs=10, callbacks=[checkpoint])
+batch_size = 128
+num_epochs = 1
 
+train_dataset = TensorDataset(X, y)
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
+for epoch in range(num_epochs):
+    for inputs, labels in train_loader:
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs.permute(0, 2, 1), labels.argmax(dim=2))
+        loss.backward()
+        optimizer.step()
 
 # Afficher l'accuracy sur les ensembles d'entraînement et de test à chaque epoch
-for epoch in range(len(history.history['accuracy'])):
-    train_accuracy = history.history['accuracy'][epoch]
-    test_accuracy = history.history['val_accuracy'][epoch]
-    print(f"Epoch {epoch + 1}/{len(history.history['accuracy'])} - Accuracy on training set: {train_accuracy} - Accuracy on test set: {test_accuracy}")
+with torch.no_grad():
+    model.eval()
+    train_accuracy = (model(X).argmax(dim=2) == y.argmax(dim=2)).float().mean().item()
+    test_accuracy = (model(X_test).argmax(dim=2) == y_test.argmax(dim=2)).float().mean().item()
+    print(f"Accuracy on training set: {train_accuracy} - Accuracy on test set: {test_accuracy}")
+
+    # Sauvegarder le meilleur modèle
+    if average_test_loss < best_test_loss:
+        best_test_loss = average_test_loss
+        torch.save(model.state_dict(), "best_model_V4.pt")
