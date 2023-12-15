@@ -177,7 +177,7 @@ def randomTrainingExample(lines):
     line = randomTraining(lines)
     input_line_tensor = inputTensor(line)
     target_line_tensor = targetTensor(line)
-    return input_line_tensor, target_line_tensor
+    return input_line_tensor, target_line_tensor, line
 
 
 def train(input_line_tensor, target_line_tensor):
@@ -309,18 +309,27 @@ def training(n_epochs, lines):
 
     start = time.time()
     all_losses = []
+    Besttotal_loss = 1000.0
     total_loss = 0
     best_loss = 100
     print_every = n_epochs / 100
 
+    coverage_loop = 1
+    names = []
     for iter in range(1, n_epochs + 1):
-        output, loss = train(*randomTrainingExample(lines))
-        total_loss += loss
+        total_loss = 0
+        for i in range(coverage_loop) :
+            input, target, inputline = randomTrainingExample(lines)
+            if inputline not in names:
+                names.append(inputline)
+            output, loss = train(input, target)
+            total_loss += loss
 
-        if iter % print_every == 0:
-            print('%s (%d %d%%) %.4f (%.4f)' % (timeSince(start), iter, iter / n_iters * 100, total_loss / iter, loss))
-
-
+        if Besttotal_loss > total_loss:
+            Besttotal_loss = total_loss
+            print('%s (%d %d%%) loss: %.4f' % (timeSince(start), iter, iter / n_epochs * 100, total_loss))
+            print("coverage = " + str(len(names)/len(lines)*100) + "%")
+    print("Final coverage = " + str(len(names)/len(lines)*100) + "%")
 max_length = 20
 
 
