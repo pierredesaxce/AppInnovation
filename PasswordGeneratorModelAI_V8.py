@@ -106,7 +106,7 @@ model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=[custom
 checkpoint = ModelCheckpoint("best_model.h5", monitor='val_custom_accuracy', save_best_only=True, mode='max', verbose=1)
 
 # Entraînement du modèle sur l'ensemble d'entraînement
-history = model.fit(X_train, y_train, validation_data=(X_val, y_val), batch_size=32, epochs=10, callbacks=[checkpoint])
+history = model.fit(X_train, y_train, validation_data=(X_val, y_val), batch_size=64, epochs=10, callbacks=[checkpoint])
 
 # Afficher l'accuracy sur les ensembles d'entraînement et de test à chaque epoch
 for epoch in range(len(history.history['custom_accuracy'])):
