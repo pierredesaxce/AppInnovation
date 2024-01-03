@@ -330,8 +330,8 @@ class GRULight(nn.Module):
         self.softmax = nn.LogSoftmax(dim=1)
 
     def forward(self, input, hidden):
-        # Assuming hidden is already a tuple
-        output, hidden = self.gru(input.unsqueeze(0), hidden)
+
+        _, hidden = self.gru(input.unsqueeze(0), hidden)
 
         hidden_concatenated = hidden
 
