@@ -265,7 +265,7 @@ class RNN(nn.Module):
     def init_hidden_random(self):
         return torch.rand(1, self.hidden_size)
     # return Variable(torch.zeros(self.n_layers, 1, self.hidden_size, device=device))
-    
+
 class LSTMLight(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):
         super(LSTMLight, self).__init__()
@@ -308,8 +308,51 @@ class LSTMLight(nn.Module):
 
     def init_hidden_random(self):
         return torch.rand(self.num_directions, 1, self.hidden_size)
-    
 
+class GRULight(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super(GRULight, self).__init__()
+
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.n_layers = n_layers
+
+        self.bidirectional = bidirectional
+        self.num_directions = 1
+        if self.bidirectional:
+            self.num_directions = 2
+
+        self.gru = nn.GRU(input_size=self.input_size, hidden_size=self.hidden_size, num_layers=1,
+                            bidirectional=self.bidirectional, batch_first=True)
+        self.out = nn.Linear(self.num_directions * self.hidden_size, output_size)
+
+        self.dropout = nn.Dropout(0.1)
+        self.softmax = nn.LogSoftmax(dim=1)
+
+    def forward(self, input, hidden):
+        # Assuming hidden is already a tuple
+        output, hidden = self.gru(input.unsqueeze(0), hidden)
+
+        hidden_concatenated = hidden
+
+        # Extract the last hidden state from the GRU output
+        if self.bidirectional:
+            hidden_concatenated = torch.cat((hidden[0], hidden[1]), 1)
+        else:
+            hidden_concatenated = hidden.squeeze(0)
+
+        output = self.out(hidden_concatenated)
+
+        output = self.dropout(output)
+        output = self.softmax(output)
+
+        return output, hidden
+
+    def init_hidden(self):
+        return torch.zeros(self.num_directions, 1, self.hidden_size)
+
+    def init_hidden_random(self):
+        return torch.rand(self.num_directions, 1, self.hidden_size)
 
 def training(n_epochs, lines):
     print()
@@ -332,7 +375,7 @@ def training(n_epochs, lines):
         print(lines[2])
         print(lines[3])
         print(lines[4])
-        
+
         total_loss = 0
         for i in range(len(lines)):
             output, loss = train(inputTensor(lines[i:i+1]), targetTensor(lines[i:i+1]))
@@ -539,7 +582,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     #
-    parser.add_argument("-d", "--trainingData", default="data/shakespeare.txt", type=str,
+    parser.add_argument("-d", "--trainingData", default="data/Ashley-Madison.txt", type=str,
                         help="trainingData [path/to/the/data]")
     parser.add_argument("-te", "--trainEval", default='train', type=str, help="trainEval [train, eval, test]")
     #
@@ -561,6 +604,8 @@ if __name__ == '__main__':
     parser.add_argument('--max_epochs', default=2, type=int)
     parser.add_argument('-p', '--percent', default=15, type=float,
                         help="percent (number between 1 and 100) of the total names to find (test) [default 15%]")
+    parser.add_argument('-dc', '--decoder', default="RNN", type=str,
+                        help="decoder to use [default RNN]")
     #
     args = parser.parse_args()
     #
@@ -585,11 +630,18 @@ if __name__ == '__main__':
     else:
         max_length = getMeanSize(lineTraining)
 
-    #decoder = RNNLight(n_letters, 128, n_letters).to(
-    #    device)  # RNN(n_characters, args.hidden_size, n_characters, args.num_layers).to(device)
-    decoder = LSTMLight(n_letters, 128, n_letters).to(device)
+    if args.decoder == "RNN":
+        decoder = RNNLight(n_letters, 128, n_letters).to(
+            device)  # RNN(n_characters, args.hidden_size, n_characters, args.num_layers).to(device)
+    elif args.decoder == "LSTM":
+        decoder = LSTMLight(n_letters, 128, n_letters).to(device)
+    elif args.decoder == "GRU":
+        decoder = GRULight(n_letters, 128, n_letters).to(device)
+    else :
+        print("Decoder incorrect, default used.")
+        decoder = RNNLight(n_letters, 128, n_letters).to(
+            device)
 
-    
     decoder_optimizer = torch.optim.Adam(decoder.parameters(), lr=lr)
 
     print('decoder: ', decoder)
