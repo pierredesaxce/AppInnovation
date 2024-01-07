@@ -592,7 +592,7 @@ if __name__ == '__main__':
     parser.add_argument("-m", "--model", default='models/rnn_v3.pt', type=str,
                         help="Path of the model to save for trainingof to load for evaluating/testing (eval/test) [path/to/the/model]")
     #
-    parser.add_argument('--n', default=1, type=int,
+    parser.add_argument('--n', default=-1, type=int,
                         help="number of samples to generate [< 1000]. If < 0, the algorithm will provide names till it reaches the percent (see --p option)")
     parser.add_argument('--ml', default=15, type=int,
                         help="number of characters to generate for each name [default =10]. if < 0 => the number of chars = mean(training set)")
@@ -601,7 +601,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_layers', default=2, type=int)
     parser.add_argument('--hidden_size', default=256, type=int)
     parser.add_argument('--bidirectional', default=True, type=bool, help="Bidirectionnal model [default True]")
-    parser.add_argument('--max_epochs', default=2, type=int)
+    parser.add_argument('--max_epochs', default=1, type=int)
     parser.add_argument('-p', '--percent', default=15, type=float,
                         help="percent (number between 1 and 100) of the total names to find (test) [default 15%]")
     parser.add_argument('-dc', '--decoder', default="RNN", type=str,
