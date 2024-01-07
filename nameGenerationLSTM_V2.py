@@ -558,7 +558,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_layers', default=2, type=int)
     parser.add_argument('--hidden_size', default=256, type=int)
     parser.add_argument('--bidirectional', default=True, type=bool, help="Bidirectionnal model [default True]")
-    parser.add_argument('--max_epochs', default=2, type=int)
+    parser.add_argument('--max_epochs', default=1, type=int)
     parser.add_argument('-p', '--percent', default=15, type=float,
                         help="percent (number between 1 and 100) of the total names to find (test) [default 15%]")
     #
@@ -585,9 +585,9 @@ if __name__ == '__main__':
     else:
         max_length = getMeanSize(lineTraining)
 
-    #decoder = RNNLight(n_letters, 128, n_letters).to(
-    #    device)  # RNN(n_characters, args.hidden_size, n_characters, args.num_layers).to(device)
-    decoder = LSTMLight(n_letters, 128, n_letters).to(device)
+    decoder = RNNLight(n_letters, 128, n_letters).to(
+        device)  # RNN(n_characters, args.hidden_size, n_characters, args.num_layers).to(device)
+    #decoder = LSTMLight(n_letters, 128, n_letters).to(device)
 
     
     decoder_optimizer = torch.optim.Adam(decoder.parameters(), lr=lr)
