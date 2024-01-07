@@ -539,7 +539,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     #
-    parser.add_argument("-d", "--trainingData", default="data/shakespeare.txt", type=str,
+    parser.add_argument("-d", "--trainingData", default="data/Ashley-Madison.txt", type=str,
                         help="trainingData [path/to/the/data]")
     parser.add_argument("-te", "--trainEval", default='train', type=str, help="trainEval [train, eval, test]")
     #
