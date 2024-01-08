@@ -22,3 +22,5 @@ Ce projet vise à créer un générateur de mots de passe basé sur des modèles
 python PasswordGeneratorGlobal.py -te train -m models/model.pt
 python PasswordGeneratorGlobal.py -te eval -m models/model.pt
 python PasswordGeneratorGlobal.py -te test -m models/model.pt
+python PasswordGeneratorGlobal.py -te testf -m models/model.pt
+python PasswordGeneratorGlobal.py -te gen -m models/model.pt
