@@ -63,3 +63,4 @@ with open("generated_passwords.txt", "w") as file:
         file.write(password + "\n")
 
 print("Generated passwords saved to generated_passwords.txt")
+ 

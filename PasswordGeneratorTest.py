@@ -27,3 +27,4 @@ for _ in range(7):  # Génère 10 caractères
     generated_password += next_char
 
 print("Mot de passe généré :", generated_password)
+ 

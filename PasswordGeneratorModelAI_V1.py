@@ -61,3 +61,4 @@ for epoch in range(len(history.history['accuracy'])):
     train_accuracy = history.history['accuracy'][epoch]
     test_accuracy = history.history['val_accuracy'][epoch]
     print(f"Epoch {epoch + 1}/{len(history.history['accuracy'])} - Accuracy on training set: {train_accuracy} - Accuracy on test set: {test_accuracy}")
+ 

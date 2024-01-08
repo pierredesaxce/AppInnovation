@@ -99,3 +99,4 @@ def test_generated_passwords(model, test_passwords_seed, num_tests=1000, max_len
 # Utilisation de la fonction pour tester les mots de passe générés
 test_generated_passwords(best_model, test_passwords_seed)
 
+ 

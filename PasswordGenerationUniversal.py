@@ -682,3 +682,4 @@ if __name__ == '__main__':
         testing(decoder, args.n, lineTest, args.percent)
     else:
         print('Choose trainEval option (--trainEval train/eval/test')
+ 

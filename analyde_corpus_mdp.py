@@ -96,3 +96,4 @@ plt.title("Courbe de distribution des tailles de mots")
 plt.xticks(range(0, 21))  # Ajuster les marques de l'axe des abscisses de 0 à 20
 plt.grid(True)
 plt.show()
+ 

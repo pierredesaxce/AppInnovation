@@ -40,3 +40,4 @@ plt.bar(word_length_counts.keys(), word_length_counts.values())
 plt.xlabel("Longueur des mots")
 plt.ylabel("Nombre de mots")
 plt.show()
+ 

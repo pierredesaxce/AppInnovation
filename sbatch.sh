@@ -7,6 +7,7 @@
 #SBATCH --mem=128G
 #SBATCH --gpus-per-node=3
 #SBATCH --partition=gpu
-#SBATCH --time=00:59:00
+#SBATCH --time=00:59:
+
 
 python3 ./Pytorch_PasswordGeneratorModelAI_V3.py

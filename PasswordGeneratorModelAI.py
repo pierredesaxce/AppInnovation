@@ -68,3 +68,4 @@ test_accuracy = history.history['val_accuracy']
 
 print(f"Accuracy on training set: {train_accuracy[-1]}")
 print(f"Accuracy on test set: {test_accuracy[-1]}")
+ 
