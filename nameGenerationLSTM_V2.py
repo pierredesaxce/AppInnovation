@@ -330,8 +330,6 @@ def training(n_epochs, lines):
         print(lines[0])
         print(lines[1])
         print(lines[2])
-        print(lines[3])
-        print(lines[4])
         
         total_loss = 0
         for i in range(len(lines)):
@@ -341,10 +339,6 @@ def training(n_epochs, lines):
             if i % print_every == 0:
                 avg_loss = total_loss / (i + 1)
                 print('%s (%d %d%%) %.4f (%.4f)' % (timeSince(start), i, i / len(lines) * 100, avg_loss, loss))
-
-    print("Training completed. Model saved.")
-    torch.save(decoder, args.model)
-    print('Model saved in:', args.model)
 
 
 
